@@ -1,80 +1,132 @@
-# Estrategias de Búsqueda Ramificación y Acotación
+# Algoritmos de Búsqueda
 
-## **Introducción**
-El objetivo de esta práctica es implementar y analizar dos estrategias de búsqueda en grafos:
+Este repositorio implementa varios algoritmos de búsqueda, tanto informados como no informados, utilizados para resolver problemas de búsqueda en grafos. A continuación se describen los algoritmos implementados, junto con su clasificación y una breve explicación de su funcionamiento.
 
-1. **Ramificación y acotación** (búsqueda no informada).
-2. **Ramificación y acotación con subestimación** (búsqueda informada con heurística).
+## Algoritmos Implementados
 
-Ambos métodos se probarán sobre el problema del grafo de las ciudades de Rumanía. Además, se comparará la eficiencia de estas estrategias en términos del número de nodos expandidos con respecto a los métodos de búsqueda primero en anchura y primero en profundidad.
+### 1. **Búsqueda en Amplitud (Breadth-First Search - BFS)**
 
----
+#### Descripción:
+El algoritmo de búsqueda en amplitud explora los nodos de un grafo nivel por nivel, comenzando desde el nodo inicial. Visita primero todos los nodos a una distancia de un solo paso, luego los nodos a dos pasos, y así sucesivamente, hasta encontrar el objetivo.
 
-## **1. Búsqueda No Informada: Ramificación y Acotación con Búsqueda No Informada**
-En la primera parte del código se presentan dos funciones de búsqueda no informada: búsqueda en anchura (breadth-first search) y búsqueda en profundidad (depth-first search). Ambas siguen el esquema básico de búsqueda "graph_search", que se encarga de explorar los nodos del espacio de soluciones sin ninguna forma de priorización basada en heurísticas.
+#### Propiedad:
+- **No informado**: No utiliza ninguna información adicional más allá de la estructura del grafo. No tiene una función heurística.
 
-### **Función breadth_first_graph_search (Búsqueda en anchura)**
-La búsqueda en anchura sigue la estrategia FIFO, lo que significa que los nodos más cercanos a la raíz del árbol de búsqueda se exploran primero. Esta estrategia garantiza encontrar la solución óptima en un árbol no ponderado, pero puede ser muy ineficiente en términos de tiempo y memoria cuando el espacio de búsqueda es grande.
+#### Implementación:
+```python
+def breadth_first_graph_search(problem):
+    # Busca los nodos más superficiales en el árbol de búsqueda primero
+    return graph_search(problem, FIFOQueue())  # FIFOQueue -> fringe
+```
 
-### **Función depth_first_graph_search (Búsqueda en profundidad)**
-Por otro lado, la búsqueda en profundidad explora los nodos más profundos del árbol de búsqueda primero, lo que permite una exploración más agresiva de los nodos descendientes antes de retroceder. Aunque esta estrategia no garantiza encontrar la solución óptima, es más eficiente en términos de memoria, ya que solo necesita almacenar los nodos en la ruta actual.
+### 2. **Búsqueda en Profundidad (Depth-First Search - DFS)**
 
-Ambas funciones (breadth_first_graph_search y depth_first_graph_search) son ejemplos de búsqueda no informada. El principal inconveniente de estas técnicas es su ineficiencia cuando el espacio de búsqueda es grande o infinito, ya que no aprovechan ninguna heurística para guiar la exploración.
+#### Descripción:
+La búsqueda en profundidad explora tan profundamente como sea posible cada rama antes de retroceder. Empuja los nodos en una pila y sigue explorando hasta que llega al final de una rama, luego retrocede y explora la siguiente.
 
-## **2. Búsqueda Informada con Heurística: Ramificación y Acotación con Subestimación**
-En la segunda parte del código, se muestran dos funciones que emplean búsqueda informada con heurísticas: ramificación y acotación con subestimación. Estas técnicas utilizan una función heurística para priorizar la expansión de ciertos nodos, guiando la búsqueda hacia las áreas más prometedoras del espacio de soluciones.
+#### Propiedad:
+- **No informado**: Similar a la búsqueda en amplitud, no utiliza ninguna información heurística y solo se basa en la estructura del grafo.
 
-### **Función branch_and_bound_graph_search**
-Esta función implementa una variante de la búsqueda de ramificación y acotación. Utiliza una estrategia basada en la subestimación del costo para determinar qué nodos explorar a continuación. En lugar de explorar todos los nodos por igual, esta técnica prioriza aquellos que tienen un costo total más bajo, garantizando que la solución óptima se encuentre de manera eficiente.
-El algoritmo expande los nodos en función de su costo estimado. Los nodos con un costo total (coste del camino más el costo estimado hacia el objetivo) menor se exploran primero, lo que mejora significativamente la eficiencia en comparación con las búsquedas no informadas.
+#### Implementación:
+```python
+def depth_first_graph_search(problem):
+    # Busca los nodos más profundos en el árbol de búsqueda primero
+    return graph_search(problem, Stack())  # Stack -> fringe
+```
 
-### **Función informed_branch_and_bound_graph_search**
-La búsqueda informada de ramificación y acotación mejora aún más el proceso utilizando una heurística que estima la distancia al objetivo. En este caso, se suman el costo acumulado del camino y la estimación de la heurística para determinar qué nodos son más prometedores. Esta técnica permite guiar la búsqueda hacia las áreas con mayor probabilidad de encontrar la solución óptima rápidamente.
-El algoritmo prioriza los nodos que tienen el costo total más bajo, sumando el costo hasta el nodo actual y la estimación de la heurística hacia el objetivo. Esto mejora la eficiencia al reducir el número de nodos explorados y acelera la convergencia hacia la solución.
+### 3. **Búsqueda por Rama y Poda (Branch and Bound Search)**
 
----
+#### Descripción:
+Este algoritmo realiza una búsqueda similar a la de amplitud, pero con la ventaja de que mantiene una lista de los nodos en función de su costo de camino. En cada paso, expande el nodo con el costo más bajo.
 
-## **Decisiones de Diseño**
-1. **Tamaño de las Imágenes**:
-   - Las imágenes se redimensionaron a \(128 x 128\) píxeles.
-   - **Motivo**: Asegurar uniformidad en la entrada al modelo y equilibrar detalle visual con eficiencia computacional.
+#### Propiedad:
+- **No informado**: Aunque intenta optimizar el camino, sigue sin utilizar heurísticas y solo se enfoca en los costos de los caminos.
 
-2. **Normalización**:
-   - Los valores de píxeles fueron normalizados a \([-1, 1]\).
-   - **Motivo**: Mejorar la convergencia del entrenamiento.
+#### Implementación:
+```python
+def branch_and_bound_graph_search(problem):
+    # Busca los nodos más superficiales primero, asegurando que se encuentre el camino más corto en un árbol de búsqueda no ponderado.
+    return graph_search(problem, BranchAndBoundQueue())  # BranchAndBoundQueue -> fringe
+```
 
-3. **Filtros y Capas**:
-   - Se utilizaron 16 y 32 filtros en las capas convolucionales.
-   - **Motivo**: Extraer características representativas sin saturar la capacidad computacional.
+### 4. **Búsqueda por Rama y Poda Informada (Informed Branch and Bound Search)**
 
-4. **Función de Pérdida**:
-   - Se empleó `CrossEntropyLoss`.
-   - **Motivo**: Es ideal para problemas de clasificación multiclase.
+#### Descripción:
+Este algoritmo combina la búsqueda por rama y poda con una función heurística que estima el costo de alcanzar el objetivo. Utiliza la suma del costo del camino y la heurística para decidir qué nodo expandir a continuación, guiando la búsqueda hacia los nodos más prometedores.
 
-5. **Optimizador**:
-   - Se utilizó Adam con una tasa de aprendizaje inicial de 0.001.
-   - **Motivo**: Adam es robusto, dinámico y eficiente en términos de tiempo de convergencia.
+#### Propiedad:
+- **Informado**: Utiliza una función heurística para guiar la búsqueda, lo que mejora la eficiencia en comparación con los algoritmos no informados.
 
----
+#### Implementación:
+```python
+def informed_branch_and_bound_graph_search(problem):
+    # Busca los nodos en función de la suma del costo del camino y la estimación heurística al objetivo, guiando la búsqueda hacia los caminos más prometedores.
+    return graph_search(problem, InformedBranchAndBoundQueue(problem))  # InformedBranchAndBoundQueue -> fringe
+```
 
-## **Conclusión**
-Las funciones de búsqueda no informada (breadth_first_graph_search y depth_first_graph_search) son sencillas de implementar y garantizan una solución óptima en ciertos contextos, pero pueden ser ineficaces cuando el espacio de búsqueda es grande o infinito. Por otro lado, las funciones de búsqueda informada con heurísticas (branch_and_bound_graph_search y informed_branch_and_bound_graph_search) mejoran significativamente la eficiencia al guiar la búsqueda hacia las soluciones más prometedoras. Estas estrategias informadas son más rápidas y eficientes, pero dependen de la calidad de la heurística para asegurar la calidad de la solución. En resumen, la incorporación de heurísticas mejora drásticamente el rendimiento en la resolución de problemas de optimización.
+## Descripción de Clases y Funciones
 
----
+### Clase `Queue`
 
-## **Aspectos Teóricos**
-1. **Búsquedas No Informadas**:
-   - En espacios grandes, pueden ser muy ineficientes debido a la explosión combinatoria.
+Es una clase abstracta que define los métodos comunes para las estructuras de datos utilizadas en los algoritmos de búsqueda, como la pila (Stack), la cola (FIFOQueue), y las colas con prioridad (BranchAndBoundQueue, InformedBranchAndBoundQueue).
 
-2. **Búsquedas Informadas**:
-   - Reducción de nodos explorados al guiarse por la heurística, mejorando el tiempo y espacio de ejecución.
+### Funciones de Búsqueda
 
-3. **Heurísticas Fuertes**:
-   - Mejoran significativamente la eficiencia y reducen el tiempo de búsqueda.
+- **`graph_search(problem, fringe)`**: Función central que realiza la búsqueda a través de los sucesores del problema utilizando la cola proporcionada (`fringe`). Esta función se utiliza en todos los algoritmos de búsqueda.
 
-4. **Heurísticas Débiles**:
-   - Afectan negativamente la eficiencia y acercan la búsqueda a una no informada.
+### Estructuras de Datos
 
----
+- **`Stack()`**: Implementa una pila (LIFO - Last In, First Out).
+- **`FIFOQueue()`**: Implementa una cola (FIFO - First In, First Out).
+- **`BranchAndBoundQueue()`**: Implementa una cola con prioridad, que ordena los nodos por el costo del camino.
+- **`InformedBranchAndBoundQueue()`**: Similar a `BranchAndBoundQueue`, pero también utiliza una función heurística para ordenar los nodos según el costo total estimado (costo del camino + heurística).
 
-Este proyecto demuestra que las búsquedas informadas, al usar heurísticas, son más eficientes que las no informadas, aunque dependen de la calidad de la heurística. Las búsquedas no informadas garantizan soluciones óptimas, pero con mayor costo computacional.
+## Ejemplo de Uso
+
+El siguiente ejemplo muestra cómo utilizar los algoritmos de búsqueda implementados para resolver un problema de búsqueda en un grafo. En este caso, el problema es encontrar un camino entre dos ciudades en el mapa de Rumanía.
+
+```python
+import search
+
+ab = search.GPSProblem('A', 'B', search.romania)
+
+print("----------breadth_first----------")
+print(search.breadth_first_graph_search(ab).path())
+
+print("----------depth_first----------")
+print(search.depth_first_graph_search(ab).path())
+
+print("----------branch_and_bound----------")
+print(search.branch_and_bound_graph_search(ab).path())
+
+print("----------informed_branch_and_bound----------")
+print(search.informed_branch_and_bound_graph_search(ab).path())
+```
+
+### Resultado Esperado
+
+```text
+----------breadth_first----------
+Nodos visitados = 16
+Nodos expandidos = 8
+[<Node B>, <Node F>, <Node S>, <Node A>]
+
+----------depth_first----------
+Nodos visitados = 10
+Nodos expandidos = 7
+[<Node B>, <Node P>, <Node C>, <Node D>, <Node M>, <Node L>, <Node T>, <Node A>]
+
+----------branch_and_bound----------
+Nodos visitados = 24
+Nodos expandidos = 12
+[<Node B>, <Node P>, <Node R>, <Node S>, <Node A>]
+
+----------informed_branch_and_bound----------
+Nodos visitados = 6
+Nodos expandidos = 5
+[<Node B>, <Node P>, <Node R>, <Node S>, <Node A>]
+```
+
+## Conclusión
+
+En este repositorio se presentan diversos algoritmos de búsqueda aplicados a problemas de grafos. Los algoritmos de búsqueda en amplitud y profundidad son enfoques no informados que exploran los nodos del grafo sin utilizar ninguna información adicional, garantizando encontrar una solución, pero con eficiencia variable. Por otro lado, los algoritmos de búsqueda por rama y poda, tanto informados como no informados, permiten una búsqueda más eficiente al organizar y priorizar la exploración de nodos. En particular, la búsqueda informada, al utilizar una función heurística, dirige la exploración hacia las soluciones más prometedoras, mejorando significativamente el rendimiento en comparación con los métodos tradicionales no informados.
